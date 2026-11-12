@@ -1,12 +1,18 @@
 """Tests for finding the Intel gap."""
 
-from bottles.gap import find_gap
+from collections.abc import Sequence
 
-ARM = ["arm64_tahoe", "arm64_sequoia", "arm64_linux", "x86_64_linux"]
+from bottles.gap import find_gap, load, waves
+
+ARM = ("arm64_tahoe", "arm64_sequoia", "arm64_linux", "x86_64_linux")
 
 
 def formula(
-    name: str, tags: list[str], version: str = "1.0", revision: int = 0, **extra
+    name: str,
+    tags: Sequence[str] = ARM,
+    version: str = "1.0",
+    revision: int = 0,
+    **extra,
 ) -> dict:
     """Build a `formula.json` entry with just the fields `gap` reads.
 
@@ -26,34 +32,33 @@ def formula(
         "revision": revision,
         "disabled": False,
         "requirements": [],
+        "dependencies": [],
+        "build_dependencies": [],
         "bottle": {"stable": {"files": {t: {} for t in tags}}},
     } | extra
 
 
-FORMULAE = {
-    f["name"]: f
-    for f in [
+FORMULAE = load(
+    [
         formula("intel", [*ARM, "sonoma"]),
         formula("all", ["all"]),
-        formula("arm-only", ARM),
+        formula("arm-only"),
         formula("no-bottle", [], bottle={}),
-        formula("disabled", ARM, disabled=True),
-        formula("needs-arm", ARM, requirements=[{"name": "arch", "version": "arm64"}]),
+        formula("disabled", disabled=True),
+        formula("needs-arm", requirements=[{"name": "arch", "version": "arm64"}]),
         formula("needs-linux", ["x86_64_linux"], requirements=[{"name": "linux"}]),
-        formula("needs-tahoe", ARM, requirements=[{"name": "macos", "version": "26"}]),
+        formula("needs-tahoe", requirements=[{"name": "macos", "version": "26"}]),
         formula(
-            "max-sonoma", ARM, requirements=[{"name": "maximum_macos", "version": "14"}]
+            "max-sonoma", requirements=[{"name": "maximum_macos", "version": "14"}]
         ),
-        formula(
-            "needs-sequoia", ARM, requirements=[{"name": "macos", "version": "15"}]
-        ),
-        formula("indexed", ARM, version="2.0", revision=1),
-        formula("bumped", ARM, version="2.1"),
-        formula("revised", ARM, revision=1),
-        formula("skipped", ARM, version="3.0", revision=2),
-        formula("failed-once", ARM),
+        formula("needs-sequoia", requirements=[{"name": "macos", "version": "15"}]),
+        formula("indexed", version="2.0", revision=1),
+        formula("bumped", version="2.1"),
+        formula("revised", revision=1),
+        formula("skipped", version="3.0", revision=2),
+        formula("failed-once"),
     ]
-}
+)
 
 INDEX = {
     "bottles": {
@@ -84,3 +89,57 @@ def test_empty_index_and_state() -> None:
         "indexed",
         "skipped",
     ]
+
+
+def test_chain_builds_the_leaf_first() -> None:
+    """`a→b→c`, all in the gap, gives wave `[c]` with `a` and `b` blocked."""
+    formulae = {
+        "a": formula("a", dependencies=["b"]),
+        "b": formula("b", build_dependencies=["c"]),
+        "c": formula("c"),
+    }
+    assert waves(formulae, ["a"], {}, {}) == (["c"], ["a", "b"])
+
+
+def test_published_dependencies_dont_block() -> None:
+    """A dependency with an official bottle, or with our bottle at its current version, is poured."""
+    formulae = {
+        "a": formula("a", dependencies=["intel"], build_dependencies=["ours"]),
+        "intel": formula("intel", ["sonoma"]),
+        "ours": formula("ours"),
+    }
+    index = {"bottles": {"ours": {"version": "1.0", "revision": 0}}}
+    assert waves(formulae, ["a"], index, {}) == (["a"], [])
+
+
+def test_poured_bottle_needs_its_runtime_dependencies_only() -> None:
+    """A poured bottle's unpublished runtime dependency blocks; its build dependency isn't needed."""
+    formulae = {
+        "a": formula("a", dependencies=["intel"]),
+        "intel": formula(
+            "intel", ["sonoma"], dependencies=["runtime"], build_dependencies=["build"]
+        ),
+        "runtime": formula("runtime"),
+        "build": formula("build"),
+    }
+    assert waves(formulae, ["a"], {}, {}) == (["runtime"], ["a"])
+
+
+def test_unbuildable_dependency_blocks() -> None:
+    """A dependency that can't be built leaves its dependents blocked."""
+    formulae = {
+        "a": formula("a", dependencies=["skipped"]),
+        "skipped": formula("skipped"),
+    }
+    state = {"skipped@1.0": {"failures": 2}}
+    assert waves(formulae, ["a"], {}, state) == ([], ["a"])
+
+
+def test_load_applies_sequoia_variation() -> None:
+    """Intel Sequoia's `variations` replace the top-level fields."""
+    f = formula("a", dependencies=["x"])
+    f["variations"] = {
+        "sequoia": {"dependencies": ["y"]},
+        "x86_64_linux": {"dependencies": ["z"]},
+    }
+    assert load([f])["a"]["dependencies"] == ["y"]
