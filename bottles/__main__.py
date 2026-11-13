@@ -2,7 +2,7 @@
 
 import argparse
 
-from bottles import gap, ghcr
+from bottles import gap, ghcr, index
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -15,6 +15,7 @@ def main(argv: list[str] | None = None) -> None:
     sub = parser.add_subparsers(dest="command", required=True)
     gap.add_parser(sub)
     ghcr.add_parser(sub)
+    index.add_parser(sub)
     args = parser.parse_args(argv)
     args.run(args)
 

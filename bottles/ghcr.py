@@ -10,6 +10,7 @@ REGISTRY = "ghcr.io/rdawebb/brewery-bottles"
 REPO_URL = "https://github.com/rdawebb/brewery-bottles"
 LAYER = "application/vnd.oci.image.layer.v1.tar+gzip"
 INDEX = "application/vnd.oci.image.index.v1+json"
+SOURCE_URL = "io.github.rdawebb.brewery-bottles.source-url"
 
 
 def image_name(name: str) -> str:
@@ -22,6 +23,20 @@ def image_name(name: str) -> str:
         The name with `@` → `/` and `+` → `x`, which OCI names can't hold.
     """
     return name.replace("@", "/").replace("+", "x")
+
+
+def bottle_entry(d: Path) -> dict:
+    """Return the one formula entry in the `brew bottle --json` output in `d`.
+
+    Args:
+        d: the directory `brew bottle` wrote to.
+
+    Returns:
+        The entry, with its `formula` and `bottle` sections.
+    """
+    ((_, entry),) = json.loads(next(d.glob("*.bottle.json")).read_text()).items()
+
+    return entry
 
 
 def image_tag(pkg_version: str, rebuild: int) -> str:
@@ -64,7 +79,7 @@ def annotations(formula: dict, source_url: str) -> dict[str, str]:
         "org.opencontainers.image.source": REPO_URL,
         "org.opencontainers.image.version": formula["pkg_version"],
         "org.opencontainers.image.licenses": formula["license"],
-        "io.github.rdawebb.brewery-bottles.source-url": source_url,
+        SOURCE_URL: source_url,
     }
 
     return {k: v for k, v in notes.items() if v}
@@ -132,8 +147,7 @@ def run(args: argparse.Namespace) -> None:
     Args:
         args: the parsed command-line arguments.
     """
-    path = next(args.dir.glob("*.bottle.json"))
-    ((_, entry),) = json.loads(path.read_text()).items()
+    entry = bottle_entry(args.dir)
     formula, bottle = entry["formula"], entry["bottle"]
     name = formula["name"]
     tag = image_tag(formula["pkg_version"], bottle["rebuild"])
