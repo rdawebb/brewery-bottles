@@ -2,7 +2,9 @@
 
 from collections.abc import Sequence
 
-from bottles.gap import find_gap, load, waves
+import pytest
+
+from bottles.gap import bottle_filename, dependencies, find_gap, load, waves
 
 ARM = ("arm64_tahoe", "arm64_sequoia", "arm64_linux", "x86_64_linux")
 
@@ -143,3 +145,40 @@ def test_load_applies_sequoia_variation() -> None:
         "x86_64_linux": {"dependencies": ["z"]},
     }
     assert load([f])["a"]["dependencies"] == ["y"]
+
+
+def test_our_dependencies_install_in_order() -> None:
+    """Our bottles come after their own dependencies; official bottles are left to brew."""
+    formulae = {
+        "a": formula("a", ARM, dependencies=["intel", "x"], build_dependencies=["y"]),
+        "intel": formula("intel", ["sonoma"]),
+        "x": formula("x", ARM, dependencies=["y"], build_dependencies=["unneeded"]),
+        "y": formula("y", ARM),
+        "unneeded": formula("unneeded", ARM),
+    }
+    row = {"version": "1.0", "revision": 0}
+    index = {"bottles": {"x": row, "y": row, "unneeded": row}}
+    assert dependencies(formulae, "a", index) == ["y", "x"]
+
+
+def test_our_dependencies_refuses_unpublished() -> None:
+    """A missing or stale row fails loudly instead of building or pouring the wrong version."""
+    formulae = {
+        "a": formula("a", ARM, dependencies=["x", "y"]),
+        "x": formula("x", ARM),
+        "y": formula("y", ARM, version="2.0"),
+    }
+    index = {"bottles": {"y": {"version": "1.0", "revision": 0}}}
+    with pytest.raises(ValueError, match="a needs unpublished bottles: x y"):
+        dependencies(formulae, "a", index)
+
+
+def test_bottle_filename() -> None:
+    """Revision and rebuild appear as `brew bottle` writes them."""
+    row = {"version": "1.0", "revision": 0, "rebuild": 0}
+    assert bottle_filename("go", row) == "go--1.0.sequoia.bottle.tar.gz"
+    row = {"version": "3.13.1", "revision": 2, "rebuild": 1}
+    assert (
+        bottle_filename("python@3.13", row)
+        == "python@3.13--3.13.1_2.sequoia.bottle.1.tar.gz"
+    )

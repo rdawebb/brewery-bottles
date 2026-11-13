@@ -1,7 +1,9 @@
 """Find the formulae with no Intel bottle for their current version."""
 
 import argparse
+import graphlib
 import json
+import sys
 import urllib.error
 import urllib.request
 from collections.abc import Iterable
@@ -37,17 +39,16 @@ def fetch_json(url: str, missing: Any = None) -> Any:
         raise
 
 
-def pkg_version(formula: dict) -> str:
-    """Return brew's `pkg_version`: the stable version, plus `_<revision>` when it's non-zero.
+def pkg_version(version: str, revision: int) -> str:
+    """Return brew's `pkg_version`: `version`, plus `_<revision>` when it's non-zero.
 
     Args:
-        formula: a `formula.json` entry.
+        version: the stable version.
+        revision: the formula revision.
 
     Returns:
         The `pkg_version` string.
     """
-    version, revision = formula["versions"]["stable"], formula["revision"]
-
     return f"{version}_{revision}" if revision else version
 
 
@@ -143,7 +144,8 @@ def find_gap(
         if not unpublished(name, formulae, index):
             continue
 
-        if state.get(f"{name}@{pkg_version(f)}", {}).get("failures", 0) >= SKIP_AFTER:
+        key = f"{name}@{pkg_version(f['versions']['stable'], f['revision'])}"
+        if state.get(key, {}).get("failures", 0) >= SKIP_AFTER:
             continue
 
         if can_build(f):
@@ -230,6 +232,52 @@ def load(formula_json: list[dict]) -> dict[str, dict]:
     }
 
 
+def dependencies(formulae: dict[str, dict], name: str, index: dict) -> list[str]:
+    """Return the dependencies of `name` that pour from the bottles, in install order.
+
+    Each comes after its own dependencies, so installing them one at a time never makes
+    brew build one from source.
+
+    Args:
+        formulae: homebrew/core's formulae by name.
+        name: the formula about to be built.
+        index: the published `index.json`.
+
+    Returns:
+        The names with no official Intel bottle.
+
+    Raises:
+        ValueError: if any of them has no current bottle in `index.json` yet.
+    """
+    needs = closure(formulae, [name], index) - {name}
+    if missing := sorted(n for n in needs if unpublished(n, formulae, index)):
+        raise ValueError(f"{name} needs unpublished bottles: {' '.join(missing)}")
+
+    graph = {n: formulae[n]["dependencies"] for n in needs}
+
+    return [
+        n
+        for n in graphlib.TopologicalSorter(graph).static_order()
+        if not has_intel_bottle(formulae[n])
+    ]
+
+
+def bottle_filename(name: str, row: dict) -> str:
+    """Return brew's local filename for the bottle in an `index.json` row.
+
+    Args:
+        name: the formula name.
+        row: its `index.json` row.
+
+    Returns:
+        `<name>--<pkg_version>.sequoia.bottle[.<rebuild>].tar.gz`, as `brew bottle` names it.
+    """
+    version = pkg_version(row["version"], row["revision"])
+    rebuild = f".{row['rebuild']}" if row["rebuild"] else ""
+
+    return f"{name}--{version}.sequoia.bottle{rebuild}.tar.gz"
+
+
 def run(args: argparse.Namespace) -> None:
     """Print this wave as a workflow matrix, plus the blocked formulae, as one JSON object.
 
@@ -247,8 +295,26 @@ def run(args: argparse.Namespace) -> None:
     print(json.dumps({"matrix": matrix, "blocked": blocked}))
 
 
+def run_deps(args: argparse.Namespace) -> None:
+    """Print `<image> <sha256> <filename>` for each of the bottles the formula needs, in order.
+
+    Args:
+        args: the parsed command-line arguments.
+    """
+    try:
+        formulae = load(fetch_json(FORMULA_URL))
+        index = fetch_json(f"{PAGES_URL}/index.json", missing={})
+
+        for name in dependencies(formulae, args.formula, index):
+            row = index["bottles"][name]
+            print(row["image"], row["sha256"], bottle_filename(name, row))
+
+    except ValueError as e:
+        sys.exit(f"error: {e}")
+
+
 def add_parser(sub: Any) -> None:
-    """Register the `gap` command.
+    """Register the `gap` and `deps` commands.
 
     Args:
         sub: the `argparse` subparsers object.
@@ -258,3 +324,9 @@ def add_parser(sub: Any) -> None:
     )
     p.add_argument("--seed", type=Path, default=Path("seed.txt"))
     p.set_defaults(run=run)
+
+    p = sub.add_parser(
+        "deps", help="list our bottles a formula needs, in install order"
+    )
+    p.add_argument("formula")
+    p.set_defaults(run=run_deps)
