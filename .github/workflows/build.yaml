@@ -43,6 +43,8 @@ jobs:
 
       - name: Set up brew with a shallow homebrew/core
         run: |
+          # Drops azure-cli to prevent 'brew update' migrating it to cask version
+          brew uninstall --formula --force azure-cli || true
           brew update
           core="$(brew --repository)/Library/Taps/homebrew/homebrew-core"
           rm -rf "$core"

@@ -23,6 +23,18 @@ usual. A daily CI run diffs homebrew/core against `index.json`, builds what's mi
 - Every bottle has a GitHub artifact attestation (build provenance).
 - Every index row and image annotation carries the formula's source URL.
 
+## Fetching from GHCR
+
+Packages are public, and anonymous reads only need the header brew sends:
+
+```sh
+curl -L -H 'Authorization: Bearer QQ==' -o bottle.tar.gz \
+  "https://ghcr.io/v2/rdawebb/brewery-bottles/<image>/blobs/sha256:<sha256>"
+gh attestation verify bottle.tar.gz -R rdawebb/brewery-bottles
+```
+
+Standard brew pours these as well, given a formula with this `root_url` and `sha256 cellar: …, sequoia: "<sha256>"`.
+
 ## `index.json` (the contract)
 
 Brewery reads this file and fetches blobs by digest. It never reads the GHCR manifest. Any changes to
