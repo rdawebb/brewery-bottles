@@ -74,7 +74,7 @@ STATE = {"skipped@3.0_2": {"failures": 2}, "failed-once@1.0": {"failures": 1}}
 
 
 def test_gap() -> None:
-    """Only buildable formulae with no Intel bottle, not indexed at this version, and not skipped."""
+    """Test that `find_gap` finds only the formulae that need an Intel bottle."""
     assert find_gap(FORMULAE, FORMULAE, INDEX, STATE) == [
         "arm-only",
         "bumped",
@@ -86,7 +86,7 @@ def test_gap() -> None:
 
 
 def test_empty_index_and_state() -> None:
-    """Before the first publish, every buildable gap formula is in the gap."""
+    """Test that before the first publish, every buildable gap formula is in the gap."""
     assert find_gap(FORMULAE, ["indexed", "skipped", "intel"], {}, {}) == [
         "indexed",
         "skipped",
@@ -94,7 +94,7 @@ def test_empty_index_and_state() -> None:
 
 
 def test_chain_builds_the_leaf_first() -> None:
-    """`a→b→c`, all in the gap, gives wave `[c]` with `a` and `b` blocked."""
+    """Test that `a→b→c`, all in the gap, gives wave `[c]` with `a` and `b` blocked."""
     formulae = {
         "a": formula("a", dependencies=["b"]),
         "b": formula("b", build_dependencies=["c"]),
@@ -104,7 +104,7 @@ def test_chain_builds_the_leaf_first() -> None:
 
 
 def test_published_dependencies_dont_block() -> None:
-    """A dependency with an official bottle, or with our bottle at its current version, is poured."""
+    """Test that a dependency with an official bottle, or with a bottle at its current version, is poured."""
     formulae = {
         "a": formula("a", dependencies=["intel"], build_dependencies=["ours"]),
         "intel": formula("intel", ["sonoma"]),
@@ -115,7 +115,7 @@ def test_published_dependencies_dont_block() -> None:
 
 
 def test_poured_bottle_needs_its_runtime_dependencies_only() -> None:
-    """A poured bottle's unpublished runtime dependency blocks; its build dependency isn't needed."""
+    """Test that a poured bottle's unpublished runtime dependency blocks."""
     formulae = {
         "a": formula("a", dependencies=["intel"]),
         "intel": formula(
@@ -128,7 +128,7 @@ def test_poured_bottle_needs_its_runtime_dependencies_only() -> None:
 
 
 def test_unbuildable_dependency_blocks() -> None:
-    """A dependency that can't be built leaves its dependents blocked."""
+    """Test that a dependency that can't be built leaves its dependents blocked."""
     formulae = {
         "a": formula("a", dependencies=["skipped"]),
         "skipped": formula("skipped"),
@@ -138,7 +138,7 @@ def test_unbuildable_dependency_blocks() -> None:
 
 
 def test_load_applies_sequoia_variation() -> None:
-    """Intel Sequoia's `variations` replace the top-level fields."""
+    """Test that Intel Sequoia's `variations` replace the top-level fields."""
     f = formula("a", dependencies=["x"])
     f["variations"] = {
         "sequoia": {"dependencies": ["y"]},
@@ -148,7 +148,7 @@ def test_load_applies_sequoia_variation() -> None:
 
 
 def test_our_dependencies_install_in_order() -> None:
-    """Our bottles come after their own dependencies; official bottles are left to brew."""
+    """Test that bottles come after their own dependencies; official bottles are left to brew."""
     formulae = {
         "a": formula("a", ARM, dependencies=["intel", "x"], build_dependencies=["y"]),
         "intel": formula("intel", ["sonoma"]),
@@ -162,7 +162,7 @@ def test_our_dependencies_install_in_order() -> None:
 
 
 def test_our_dependencies_refuses_unpublished() -> None:
-    """A missing or stale row fails loudly instead of building or pouring the wrong version."""
+    """Test that a missing or stale row fails instead of building or pouring the wrong version."""
     formulae = {
         "a": formula("a", ARM, dependencies=["x", "y"]),
         "x": formula("x", ARM),
@@ -174,7 +174,7 @@ def test_our_dependencies_refuses_unpublished() -> None:
 
 
 def test_bottle_filename() -> None:
-    """Revision and rebuild appear as `brew bottle` writes them."""
+    """Test that revision and rebuild appear as `brew bottle` writes them."""
     row = {"version": "1.0", "revision": 0, "rebuild": 0}
     assert bottle_filename("go", row) == "go--1.0.sequoia.bottle.tar.gz"
     row = {"version": "3.13.1", "revision": 2, "rebuild": 1}
