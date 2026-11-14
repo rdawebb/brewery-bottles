@@ -114,6 +114,55 @@
       },
       "version": "1.13.2"
     },
+    "openssl@4": {
+      "cellar": "/usr/local/Cellar",
+      "image": "openssl/4",
+      "rebuild": 0,
+      "revision": 0,
+      "sha256": "52e73be790b871550bff75ac5297bcc6f39af8f351886f3d64c0fefec647a2e0",
+      "source_url": "https://github.com/openssl/openssl/releases/download/openssl-4.1.0/openssl-4.1.0.tar.gz",
+      "tab": {
+        "arch": "x86_64",
+        "binary_relocation_files": [
+          "lib/libcrypto.4.dylib",
+          "lib/libcrypto.a"
+        ],
+        "built_on": {
+          "clt": "16.4.0.0.1.1747106510",
+          "cpu_family": "ivybridge",
+          "os": "Macintosh",
+          "os_version": "macOS 15.7",
+          "preferred_perl": "5.34",
+          "xcode": "16.4"
+        },
+        "changed_files": [
+          "lib/pkgconfig/libcrypto.pc",
+          "lib/pkgconfig/libssl.pc",
+          "lib/pkgconfig/openssl.pc"
+        ],
+        "compiler": "clang",
+        "homebrew_version": "7.0.13-136-g9230f0e",
+        "linkage_files": [
+          "bin/openssl",
+          "lib/libcrypto.4.dylib",
+          "lib/libssl.4.dylib",
+          "lib/ossl-modules/legacy.dylib"
+        ],
+        "runtime_dependencies": [
+          {
+            "bottle_rebuild": 0,
+            "compatibility_version": 1,
+            "declared_directly": true,
+            "full_name": "ca-certificates",
+            "pkg_version": "2026-11-05",
+            "revision": 0,
+            "version": "2026-11-05"
+          }
+        ],
+        "source_modified_time": 1792757804
+      },
+      "version": "4.1.0"
+    },
     "pkgconf": {
       "cellar": "/usr/local/Cellar",
       "image": "pkgconf",
@@ -262,7 +311,7 @@
       "version": "5.8.4"
     }
   },
-  "generated_at": "2026-11-14T10:37:35Z",
+  "generated_at": "2026-11-14T10:37:43Z",
   "root_url": "https://ghcr.io/v2/rdawebb/brewery-bottles",
   "schema": 1,
   "tag": "sequoia"
