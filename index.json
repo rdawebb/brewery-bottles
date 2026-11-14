@@ -227,6 +227,125 @@
       },
       "version": "9.4.4"
     },
+    "llvm": {
+      "cellar": ":any",
+      "image": "llvm",
+      "rebuild": 0,
+      "revision": 1,
+      "sha256": "359a92cc11e311109e608979a055a88992095850c150cd004c63141dbf57c378",
+      "source_url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.5/llvm-project-23.1.5.src.tar.xz",
+      "tab": {
+        "arch": "x86_64",
+        "binary_relocation_files": [],
+        "built_on": {
+          "clt": "16.4.0.0.1.1747106510",
+          "cpu_family": "ivybridge",
+          "os": "Macintosh",
+          "os_version": "macOS 15.7",
+          "preferred_perl": "5.34",
+          "xcode": "16.4"
+        },
+        "changed_files": [
+          "lib/python3.10/site-packages/clang/cindex.py",
+          "lib/python3.11/site-packages/clang/cindex.py",
+          "lib/python3.12/site-packages/clang/cindex.py",
+          "lib/python3.13/site-packages/clang/cindex.py",
+          "lib/python3.14/site-packages/clang/cindex.py",
+          "lib/python3.15/site-packages/clang/cindex.py",
+          "lib/python3.9/site-packages/clang/cindex.py"
+        ],
+        "compiler": "clang",
+        "homebrew_version": "7.0.13-140-g1cd7b3e",
+        "linkage_files": [
+          "bin/FileCheck",
+          "bin/UnicodeNameMappingGenerator",
+          "bin/clang-tblgen",
+          "bin/count",
+          "bin/lli-child-target",
+          "bin/llvm-config",
+          "bin/llvm-exegesis",
+          "bin/llvm-jitlink-executor",
+          "bin/llvm-tblgen",
+          "bin/llvm-test-mustache-spec",
+          "bin/mlir-pdll",
+          "bin/mlir-pdll-lsp-server",
+          "bin/mlir-src-sharder",
+          "bin/mlir-tblgen",
+          "bin/not",
+          "bin/obj2yaml",
+          "bin/split-file",
+          "bin/tblgen-lsp-server",
+          "bin/tblgen-to-irdl",
+          "bin/yaml-bench",
+          "bin/yaml2obj",
+          "lib/c++/libc++.1.0.dylib",
+          "lib/c++/libc++abi.1.0.dylib",
+          "lib/clang/23/lib/darwin/libclang_rt.asan_osx_dynamic.dylib",
+          "lib/clang/23/lib/darwin/libclang_rt.lsan_osx_dynamic.dylib",
+          "lib/clang/23/lib/darwin/libclang_rt.rtsan_osx_dynamic.dylib",
+          "lib/clang/23/lib/darwin/libclang_rt.stats_osx_dynamic.dylib",
+          "lib/clang/23/lib/darwin/libclang_rt.tsan_osx_dynamic.dylib",
+          "lib/clang/23/lib/darwin/libclang_rt.tysan_osx_dynamic.dylib",
+          "lib/clang/23/lib/darwin/libclang_rt.ubsan_minimal_osx_dynamic.dylib",
+          "lib/clang/23/lib/darwin/libclang_rt.ubsan_osx_dynamic.dylib",
+          "lib/libClangdXPCLib.23.1.dylib",
+          "lib/libLLVM-C.23.1.dylib",
+          "lib/libLLVM.23.1.dylib",
+          "lib/libLTO.dylib",
+          "lib/libMLIR.23.1.dylib",
+          "lib/libMLIRExecutionEngineShared.23.1.dylib",
+          "lib/libRemarks.23.1.dylib",
+          "lib/libclang-cpp.23.1.dylib",
+          "lib/libclang.dylib",
+          "lib/libmlir_apfloat_wrappers.23.1.dylib",
+          "lib/libmlir_arm_runner_utils.23.1.dylib",
+          "lib/libmlir_arm_sme_abi_stubs.23.1.dylib",
+          "lib/libmlir_async_runtime.23.1.dylib",
+          "lib/libmlir_c_runner_utils.23.1.dylib",
+          "lib/libmlir_float16_utils.23.1.dylib",
+          "lib/libmlir_runner_utils.23.1.dylib",
+          "lib/libomp.dylib",
+          "lib/unwind/libunwind.1.0.dylib"
+        ],
+        "runtime_dependencies": [
+          {
+            "compatibility_version": 1,
+            "declared_directly": false,
+            "full_name": "lz4",
+            "pkg_version": "1.11.1",
+            "revision": 0,
+            "version": "1.11.1"
+          },
+          {
+            "compatibility_version": 1,
+            "declared_directly": false,
+            "full_name": "xz",
+            "pkg_version": "5.8.4",
+            "revision": 0,
+            "version": "5.8.4"
+          },
+          {
+            "bottle_rebuild": 0,
+            "compatibility_version": 1,
+            "declared_directly": true,
+            "full_name": "zstd",
+            "pkg_version": "1.5.7_1",
+            "revision": 1,
+            "version": "1.5.7"
+          },
+          {
+            "compatibility_version": 6,
+            "declared_directly": true,
+            "full_name": "z3",
+            "pkg_version": "5.4.1",
+            "revision": 0,
+            "version": "5.4.1"
+          }
+        ],
+        "source_modified_time": 1793616315
+      },
+      "version": "23.1.5"
+    },
     "lz4": {
       "cellar": ":any",
       "image": "lz4",
@@ -675,7 +794,7 @@
       "version": "5.4.1"
     }
   },
-  "generated_at": "2026-11-14T17:18:15Z",
+  "generated_at": "2026-11-14T22:03:37Z",
   "root_url": "https://ghcr.io/v2/rdawebb/brewery-bottles",
   "schema": 1,
   "tag": "sequoia"
