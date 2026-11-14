@@ -1,38 +1,29 @@
 name: Drain
 
 on:
+  schedule:
+    - cron: "17 4 * * *"
   workflow_dispatch:
-    inputs:
-      formula:
-        description: The homebrew/core formula to build and publish
-        type: string
-        required: true
+
+# Runs overlap: each claims its wave in gh-pages so no other run builds it, and each leg
+# publishes as it finishes and starts another run
 
 permissions: {}
 
 jobs:
-  build:
-    uses: ./.github/workflows/build.yaml
-    with:
-      formula: ${{ inputs.formula }}
-    permissions:
-      contents: read
-      packages: write
-      id-token: write
-      attestations: write
-
-  publish:
-    needs: build
-    if: ${{ !cancelled() }} # Failed legs are recorded too
+  plan:
     runs-on: ubuntu-latest
+    # Every leg that publishes starts a run, so they build up: one plans, one waits, and the rest
+    # are cancelled, which loses nothing, as the waiting one plans from the latest gh-pages anyway
     concurrency:
-      group: pages
+      group: drain-plan
       cancel-in-progress: false
     permissions:
-      contents: write
-    env:
-      NAMES: ${{ inputs.formula }} # Via env, never interpolated into a script
-      ROOT_URL: https://ghcr.io/v2/rdawebb/brewery-bottles
+      contents: write # To claim the wave
+      actions: read # To see which runs' claims still hold
+    outputs:
+      plan: ${{ steps.plan.outputs.plan }}
+      names: ${{ steps.plan.outputs.names }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -44,46 +35,82 @@ jobs:
           enable-cache: true
           python-version: "3.11"
 
+      - name: Plan and claim this wave
+        id: plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TOKEN: ${{ github.token }}
+        run: |
+          runs() {
+            gh run list -R "$GITHUB_REPOSITORY" -w drain.yaml -s "$1" -L 1000 \
+              --json databaseId -q '.[].databaseId'
+          }
+
+          # `-e` doesn't apply in a function called as a condition, so each step checks itself.
+          # A failed listing must stop it, as it would make every claim look dead.
+          plan() {
+            LIVE=$(runs queued && runs in_progress) || return
+            export LIVE
+            scripts/pages.sh bash -c 'uv run python -m bottles gap --pages pages \
+              --claim "$GITHUB_RUN_ID" --live $LIVE > plan.json'
+          }
+
+          # A failed plan starts no builds, so nothing starts another run until the cron one
+          for attempt in 1 2 3; do
+            plan && break
+            [ "$attempt" = 3 ] && exit 1
+            echo "::warning::Plan attempt $attempt failed, retrying in a minute"
+            sleep 60
+          done
+          cat plan.json
+          echo "plan=$(cat plan.json)" >> "$GITHUB_OUTPUT"
+          echo "names=$(jq -r '[.matrix.include[].name] | join(" ")' plan.json)" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: plan
+    if: needs.plan.outputs.names != '' # Actions fails a job on an empty matrix
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.plan.outputs.plan).matrix }}
+    uses: ./.github/workflows/build.yaml
+    with:
+      formula: ${{ matrix.name }}
+    permissions:
+      contents: write
+      actions: write
+      packages: write
+      id-token: write
+      attestations: write
+
+  summary:
+    needs: [plan, build]
+    if: ${{ !cancelled() && needs.plan.result == 'success' }} # Failed legs are shown too
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      PLAN: ${{ needs.plan.outputs.plan }} # Via env, never interpolated into a script
+      NAMES: ${{ needs.plan.outputs.names }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          enable-cache: true
+          python-version: "3.11"
+
+      # Each artifact holds `<name>/`, so this gives `results/<name>/` for any count
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        if: env.NAMES != ''
         with:
           pattern: result-*
           path: results
+          merge-multiple: true
 
-      - name: Check out gh-pages
+      - name: Summary
         run: |
-          if git fetch --depth=1 origin gh-pages; then
-            git worktree add -B gh-pages pages FETCH_HEAD
-          else
-            git worktree add --orphan -b gh-pages pages
-          fi
-
-      - name: Merge
-        run: |
-          read -ra names <<< "$NAMES"
-          uv run python -m bottles merge pages results "${names[@]}" > added.txt
-          cat added.txt
-
-      - name: Push
-        working-directory: pages
-        env:
-          TOKEN: ${{ github.token }}
-        run: |
-          touch .nojekyll
-          git add -A
-          git diff --cached --quiet && exit 0
-          git -c user.name="github-actions[bot]" \
-            -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
-            commit -m "Publish run $GITHUB_RUN_ID"
-          git push "https://x-access-token:$TOKEN@github.com/$GITHUB_REPOSITORY.git" gh-pages
-
-      # Anonymously, as brewery fetches them, so a private package or broken push is caught
-      - name: Check the new blobs
-        run: |
-          while read -r image sha256; do
-            got=$(curl -sSfL -H 'Authorization: Bearer QQ==' \
-              "$ROOT_URL/$image/blobs/sha256:$sha256" | sha256sum | cut -d' ' -f1)
-            if [ "$got" != "$sha256" ]; then
-              echo "::error::$image: expected $sha256, got $got"
-              exit 1
-            fi
-          done < added.txt
+          echo "$PLAN" > plan.json
+          uv run python -m bottles summary plan.json results >> "$GITHUB_STEP_SUMMARY"

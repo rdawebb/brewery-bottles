@@ -1,9 +1,11 @@
 """Tests for finding the Intel gap."""
 
+import json
 from collections.abc import Sequence
 
 import pytest
 
+from bottles.__main__ import main
 from bottles.gap import bottle_filename, dependencies, find_gap, load, waves
 
 ARM = ("arm64_tahoe", "arm64_sequoia", "arm64_linux", "x86_64_linux")
@@ -182,3 +184,25 @@ def test_bottle_filename() -> None:
         bottle_filename("python@3.13", row)
         == "python@3.13--3.13.1_2.sequoia.bottle.1.tar.gz"
     )
+
+
+def test_claims_leave_live_runs_alone(tmp_path, monkeypatch, capsys) -> None:
+    """Test that a live run's claim is left out and kept, a finished run's is retaken."""
+    (tmp_path / "seed.txt").write_text("busy dead new")
+    (tmp_path / "claims.json").write_text('{"busy": 1, "dead": 2}')
+    api = [formula("busy"), formula("dead"), formula("new")]
+    monkeypatch.setattr("bottles.gap.fetch_json", lambda url, missing=None: api)
+
+    main(
+        ["gap", "--seed", str(tmp_path / "seed.txt"), "--pages", str(tmp_path)]
+        + ["--claim", "9", "--live", "1", "9"]
+    )
+
+    plan = json.loads(capsys.readouterr().out)
+    assert [leg["name"] for leg in plan["matrix"]["include"]] == ["dead", "new"]
+    assert plan["building"] == ["busy"]
+    assert json.loads((tmp_path / "claims.json").read_text()) == {
+        "busy": 1,
+        "dead": 9,
+        "new": 9,
+    }

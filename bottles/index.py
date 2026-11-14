@@ -7,7 +7,14 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from bottles.gap import FORMULA_URL, fetch_json, load, pkg_version
+from bottles.gap import (
+    FORMULA_URL,
+    fetch_json,
+    load,
+    pkg_version,
+    state_key,
+    write,
+)
 from bottles.ghcr import REGISTRY, SOURCE_URL, bottle_entry, image_name
 
 ROOT_URL = REGISTRY.replace("ghcr.io/", "https://ghcr.io/v2/", 1)
@@ -94,32 +101,25 @@ def read(path: Path) -> dict:
     return json.loads(path.read_text()) if path.exists() else {}
 
 
-def write(path: Path, data: dict) -> None:
-    """Write `data` with sorted keys and a stable indent, so diffs show only what changed.
-
-    Args:
-        path: the file to write.
-        data: the data to write.
-    """
-    path.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n", newline="\n")
-
-
 def run(args: argparse.Namespace) -> None:
     """Merge each named build's result into `index.json` and `state.json` in `args.pages`.
 
-    Each formula's result is in `<results>/result-<name>`: the bottle JSON and image index on
+    Each formula's result is in `<results>/<name>`: the bottle JSON and image index on
     success, or `failed.json` (`reason`, `seconds`) on failure; prints `<image> <sha256>` for
-    each added row.
+    each added row; each name's claim in `claims.json` is released, results or not.
 
     Args:
         args: the parsed command-line arguments.
     """
+    if not args.names:  # Leave `generated_at` alone, so nothing is committed
+        return
+
     index = read(args.pages / "index.json")
     state = read(args.pages / "state.json")
     formulae = None
 
     for name in args.names:
-        d = args.results / f"result-{name}"
+        d = args.results / name
         if any(d.glob("*.bottle.json")):
             new_name, new = row(bottle_entry(d), read(d / "image-index.json"))
             add(index, state, new_name, new)
@@ -133,8 +133,7 @@ def run(args: argparse.Namespace) -> None:
         # Keyed on the API's version, as `find_gap` looks it up
         formulae = formulae or load(fetch_json(FORMULA_URL))
         if f := formulae.get(name):
-            key = f"{name}@{pkg_version(f['versions']['stable'], f['revision'])}"
-            fail(state, key, failed["reason"], failed["seconds"])
+            fail(state, state_key(name, f), failed["reason"], failed["seconds"])
 
     index |= {
         "schema": 1,
@@ -144,10 +143,69 @@ def run(args: argparse.Namespace) -> None:
     }
     write(args.pages / "index.json", index)
     write(args.pages / "state.json", state)
+    claims = read(args.pages / "claims.json")
+    write(
+        args.pages / "claims.json",
+        {n: r for n, r in claims.items() if n not in args.names},
+    )
+
+
+def summary(plan: dict, results: Path) -> str:
+    """Return the run's Markdown summary: each leg's result, wall time and version drift.
+
+    Args:
+        plan: the `gap` output this run built from.
+        results: the downloaded build artifacts.
+
+    Returns:
+        The summary.
+    """
+    lines = ["| Formula | Result | Minutes | Version |", "| --- | --- | --- | --- |"]
+    for leg in plan["matrix"]["include"]:
+        name, version = leg["name"], leg["version"]
+        d = results / name
+        if any(d.glob("*.bottle.json")):
+            result, seconds = "built", int((d / "seconds").read_text())
+
+            # The build's fresh core clone can be ahead of the API the plan read
+            if (built := bottle_entry(d)["formula"]["pkg_version"]) != version:
+                version = f"{version} → {built}"
+
+        elif failed := read(d / "failed.json"):
+            result, seconds = f"failed ({failed['reason']})", failed["seconds"]
+
+        else:
+            result, seconds = "lost, retried next run", None
+
+        minutes = "" if seconds is None else round(seconds / 60)
+        lines.append(f"| {name} | {result} | {minutes} | {version} |")
+
+    if not plan["matrix"]["include"]:
+        lines = ["Nothing to build."]
+
+    titles = {
+        "building": "Building elsewhere",
+        "blocked": "Blocked",
+        "skipped": "Skipped",
+    }
+    for key, title in titles.items():
+        if names := plan[key]:
+            lines.append(f"\n**{title}:** {', '.join(names)}")
+
+    return "\n".join(lines) + "\n"
+
+
+def run_summary(args: argparse.Namespace) -> None:
+    """Print the run's Markdown summary.
+
+    Args:
+        args: the parsed command-line arguments.
+    """
+    print(summary(read(args.plan), args.results), end="")
 
 
 def add_parser(sub: Any) -> None:
-    """Register the `merge` command.
+    """Register the `merge` and `summary` commands.
 
     Args:
         sub: the `argparse` subparsers object.
@@ -157,3 +215,8 @@ def add_parser(sub: Any) -> None:
     p.add_argument("results", type=Path, help="the downloaded build artifacts")
     p.add_argument("names", nargs="*", help="the formulae this run built")
     p.set_defaults(run=run)
+
+    p = sub.add_parser("summary", help="summarise a drain run in Markdown")
+    p.add_argument("plan", type=Path, help="the `gap` output for this run")
+    p.add_argument("results", type=Path, help="the downloaded build artifacts")
+    p.set_defaults(run=run_summary)

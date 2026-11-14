@@ -5,7 +5,7 @@ from pathlib import Path
 
 from bottles.__main__ import main
 from bottles.gap import find_gap
-from bottles.index import add, fail, row
+from bottles.index import add, fail, row, summary
 from tests.test_gap import formula
 
 
@@ -79,17 +79,16 @@ def test_failures_count_up_to_the_skip_threshold() -> None:
 def test_merge_results(tmp_path: Path, monkeypatch, capsys) -> None:
     """Test that a built leg is added, a failed one counted, and a missing one left to retry."""
     results, pages = tmp_path / "results", tmp_path / "pages"
-    (results / "result-go").mkdir(parents=True)
-    (results / "result-bad").mkdir()
+    (results / "go").mkdir(parents=True)
+    (results / "bad").mkdir()
     pages.mkdir()
+    (pages / "claims.json").write_text('{"go": 1, "bad": 1, "other": 2}')
     entry = built("go", "1.0")
-    (results / "result-go" / "go--1.0.sequoia.bottle.json").write_text(
+    (results / "go" / "go--1.0.sequoia.bottle.json").write_text(
         json.dumps({"go": entry})
     )
-    (results / "result-go" / "image-index.json").write_text(json.dumps(IMAGE_INDEX))
-    (results / "result-bad" / "failed.json").write_text(
-        '{"reason": "test", "seconds": 5}'
-    )
+    (results / "go" / "image-index.json").write_text(json.dumps(IMAGE_INDEX))
+    (results / "bad" / "failed.json").write_text('{"reason": "test", "seconds": 5}')
     api = [formula("go"), formula("bad", version="2.0", revision=1), formula("gone")]
     monkeypatch.setattr("bottles.index.fetch_json", lambda url: api)
 
@@ -103,3 +102,36 @@ def test_merge_results(tmp_path: Path, monkeypatch, capsys) -> None:
     assert json.loads((pages / "state.json").read_text()) == {
         "bad@2.0_1": {"failures": 1, "reason": "test", "seconds": 5},
     }
+    assert json.loads((pages / "claims.json").read_text()) == {"other": 2}
+
+
+def test_summary(tmp_path: Path) -> None:
+    """Test that each leg's result, minutes and version drift are shown, then blocked and skipped."""
+    (tmp_path / "go").mkdir()
+    (tmp_path / "go" / "go--1.1.sequoia.bottle.json").write_text(
+        json.dumps({"go": built("go", "1.1")})
+    )
+    (tmp_path / "go" / "seconds").write_text("1380\n")
+    (tmp_path / "rust").mkdir()
+    (tmp_path / "rust" / "failed.json").write_text(
+        '{"reason": "timeout", "seconds": 19800}'
+    )
+    legs = [{"name": n, "version": "1.0"} for n in ("go", "rust", "gone")]
+    plan = {
+        "matrix": {"include": legs},
+        "blocked": ["a", "b"],
+        "skipped": [],
+        "building": ["c"],
+    }
+
+    assert summary(plan, tmp_path).splitlines() == [
+        "| Formula | Result | Minutes | Version |",
+        "| --- | --- | --- | --- |",
+        "| go | built | 23 | 1.0 → 1.1 |",
+        "| rust | failed (timeout) | 330 | 1.0 |",
+        "| gone | lost, retried next run |  | 1.0 |",
+        "",
+        "**Building elsewhere:** c",
+        "",
+        "**Blocked:** a, b",
+    ]

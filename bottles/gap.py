@@ -52,6 +52,76 @@ def pkg_version(version: str, revision: int) -> str:
     return f"{version}_{revision}" if revision else version
 
 
+def current(formula: dict) -> str:
+    """Return the `pkg_version` of `formula`'s current stable version.
+
+    Args:
+        formula: a `formula.json` entry.
+
+    Returns:
+        The `pkg_version` string.
+    """
+    return pkg_version(formula["versions"]["stable"], formula["revision"])
+
+
+def state_key(name: str, formula: dict) -> str:
+    """Return the `state.json` key for `formula`'s current version: `name@pkg_version`.
+
+    Args:
+        name: the formula name.
+        formula: its `formula.json` entry.
+
+    Returns:
+        The key.
+    """
+    return f"{name}@{current(formula)}"
+
+
+def skipped(name: str, formula: dict, state: dict) -> bool:
+    """Return whether `formula`'s current version has failed too often to retry.
+
+    Args:
+        name: the formula name.
+        formula: its `formula.json` entry.
+        state: the published `state.json`.
+
+    Returns:
+        True once it has failed `SKIP_AFTER` times.
+    """
+    return state.get(state_key(name, formula), {}).get("failures", 0) >= SKIP_AFTER
+
+
+def published(pages: Path | None, file: str) -> dict:
+    """Return `index.json` or `state.json`, empty before the first publish.
+
+    CI reads a fresh `gh-pages` checkout, since Pages lags a push by minutes and the next wave
+    must see the last one's bottles.
+
+    Args:
+        pages: a `gh-pages` checkout, or None to fetch from Pages.
+        file: the file name.
+
+    Returns:
+        The parsed data.
+    """
+    if pages is None:
+        return fetch_json(f"{PAGES_URL}/{file}", missing={})
+
+    path = pages / file
+
+    return json.loads(path.read_text()) if path.exists() else {}
+
+
+def write(path: Path, data: dict) -> None:
+    """Write `data` with sorted keys and a stable indent, so diffs show only what changed.
+
+    Args:
+        path: the file to write.
+        data: the data to write.
+    """
+    path.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n", newline="\n")
+
+
 def _macos(version: str) -> int:
     """Return the macOS version number for a `version` string.
 
@@ -144,8 +214,7 @@ def find_gap(
         if not unpublished(name, formulae, index):
             continue
 
-        key = f"{name}@{pkg_version(f['versions']['stable'], f['revision'])}"
-        if state.get(key, {}).get("failures", 0) >= SKIP_AFTER:
+        if skipped(name, f, state):
             continue
 
         if can_build(f):
@@ -279,20 +348,39 @@ def bottle_filename(name: str, row: dict) -> str:
 
 
 def run(args: argparse.Namespace) -> None:
-    """Print this wave as a workflow matrix, plus the blocked formulae, as one JSON object.
+    """Print this wave as a workflow matrix, plus the blocked, skipped and building formulae.
+
+    Each matrix entry has the planned `version` (`pkg_version`), to show drift in the summary;
+    with `--claim`, formulae claimed in `claims.json` by a live run are left to it, and the
+    rest of the wave is claimed for this run; claims of finished runs are dropped.
 
     Args:
         args: the parsed command-line arguments.
     """
     names = args.seed.read_text().split()
     formulae = load(fetch_json(FORMULA_URL))
-    index = fetch_json(f"{PAGES_URL}/index.json", missing={})
-    state = fetch_json(f"{PAGES_URL}/state.json", missing={})
+    index = published(args.pages, "index.json")
+    state = published(args.pages, "state.json")
+    claims = {
+        n: run
+        for n, run in published(args.pages, "claims.json").items()
+        if run in args.live
+    }
 
     wave, blocked = waves(formulae, names, index, state)
-    matrix = {"include": [{"name": name} for name in wave]}
+    wave = [n for n in wave if n not in claims]
+    if args.claim:
+        write(args.pages / "claims.json", claims | dict.fromkeys(wave, args.claim))
 
-    print(json.dumps({"matrix": matrix, "blocked": blocked}))
+    matrix = {"include": [{"name": n, "version": current(formulae[n])} for n in wave]}
+    skip = sorted(
+        n
+        for n in closure(formulae, names, index)
+        if unpublished(n, formulae, index) and skipped(n, formulae[n], state)
+    )
+
+    plan = {"matrix": matrix, "blocked": blocked, "skipped": skip}
+    print(json.dumps(plan | {"building": sorted(claims)}))
 
 
 def run_deps(args: argparse.Namespace) -> None:
@@ -301,9 +389,12 @@ def run_deps(args: argparse.Namespace) -> None:
     Args:
         args: the parsed command-line arguments.
     """
+    formulae = load(fetch_json(FORMULA_URL))
+    if args.formula not in formulae:
+        sys.exit(f"error: {args.formula} isn't a homebrew/core formula")
+
     try:
-        formulae = load(fetch_json(FORMULA_URL))
-        index = fetch_json(f"{PAGES_URL}/index.json", missing={})
+        index = published(args.pages, "index.json")
 
         for name in dependencies(formulae, args.formula, index):
             row = index["bottles"][name]
@@ -323,10 +414,18 @@ def add_parser(sub: Any) -> None:
         "gap", help="plan the next wave of Intel builds for the seed list"
     )
     p.add_argument("--seed", type=Path, default=Path("seed.txt"))
+    p.add_argument("--pages", type=Path, help="a gh-pages checkout (default: fetch)")
+    p.add_argument(
+        "--claim", type=int, metavar="RUN_ID", help="claim the wave in --pages"
+    )
+    p.add_argument(
+        "--live", type=int, nargs="*", default=[], help="the run IDs still going"
+    )
     p.set_defaults(run=run)
 
     p = sub.add_parser(
         "deps", help="list our bottles a formula needs, in install order"
     )
     p.add_argument("formula")
+    p.add_argument("--pages", type=Path, help="a gh-pages checkout (default: fetch)")
     p.set_defaults(run=run_deps)
