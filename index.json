@@ -644,9 +644,38 @@
         "source_modified_time": 1788964466
       },
       "version": "5.8.4"
+    },
+    "z3": {
+      "cellar": ":any",
+      "image": "z3",
+      "rebuild": 0,
+      "revision": 0,
+      "sha256": "ae7e883e52307e6f7e63a5af2e85f95d8d13e8fffc6ff6cdeacb9e6e38d96d60",
+      "source_url": "https://github.com/Z3Prover/z3/archive/refs/tags/z3-5.4.1.tar.gz",
+      "tab": {
+        "arch": "x86_64",
+        "binary_relocation_files": [],
+        "built_on": {
+          "clt": "16.4.0.0.1.1747106510",
+          "cpu_family": "ivybridge",
+          "os": "Macintosh",
+          "os_version": "macOS 15.7",
+          "preferred_perl": "5.34",
+          "xcode": "16.4"
+        },
+        "changed_files": [],
+        "compiler": "clang",
+        "homebrew_version": "7.0.13-138-g097e0b5",
+        "linkage_files": [
+          "lib/libz3.5.4.1.0.dylib"
+        ],
+        "runtime_dependencies": [],
+        "source_modified_time": 1794354107
+      },
+      "version": "5.4.1"
     }
   },
-  "generated_at": "2026-11-14T11:19:14Z",
+  "generated_at": "2026-11-14T11:47:09Z",
   "root_url": "https://ghcr.io/v2/rdawebb/brewery-bottles",
   "schema": 1,
   "tag": "sequoia"
