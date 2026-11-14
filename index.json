@@ -98,6 +98,39 @@
       },
       "version": "3.0.10"
     },
+    "readline": {
+      "cellar": ":any",
+      "image": "readline",
+      "rebuild": 0,
+      "revision": 0,
+      "sha256": "b59afc6e248ea57401113666aa557b042a6154aa85da14d477a39158787f8da5",
+      "source_url": "https://ftpmirror.gnu.org/readline/readline-8.3.tar.gz",
+      "tab": {
+        "arch": "x86_64",
+        "binary_relocation_files": [],
+        "built_on": {
+          "clt": "16.4.0.0.1.1747106510",
+          "cpu_family": "ivybridge",
+          "os": "Macintosh",
+          "os_version": "macOS 15.7",
+          "preferred_perl": "5.34",
+          "xcode": "16.4"
+        },
+        "changed_files": [
+          "lib/pkgconfig/history.pc",
+          "lib/pkgconfig/readline.pc"
+        ],
+        "compiler": "clang",
+        "homebrew_version": "7.0.13-136-g9230f0e",
+        "linkage_files": [
+          "lib/libhistory.8.3.dylib",
+          "lib/libreadline.8.3.dylib"
+        ],
+        "runtime_dependencies": [],
+        "source_modified_time": 1750882156
+      },
+      "version": "8.3.6"
+    },
     "xz": {
       "cellar": ":any",
       "image": "xz",
@@ -134,7 +167,7 @@
       "version": "5.8.4"
     }
   },
-  "generated_at": "2026-11-14T10:23:20Z",
+  "generated_at": "2026-11-14T10:25:05Z",
   "root_url": "https://ghcr.io/v2/rdawebb/brewery-bottles",
   "schema": 1,
   "tag": "sequoia"
