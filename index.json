@@ -1,5 +1,38 @@
 {
   "bottles": {
+    "mpdecimal": {
+      "cellar": ":any",
+      "image": "mpdecimal",
+      "rebuild": 0,
+      "revision": 0,
+      "sha256": "88b7eec00af5f96e876272491eb598d91d249e8a9c2cb1267915c74b70d9748c",
+      "source_url": "https://www.bytereef.org/software/mpdecimal/releases/mpdecimal-4.0.1.tar.gz",
+      "tab": {
+        "arch": "x86_64",
+        "binary_relocation_files": [],
+        "built_on": {
+          "clt": "16.3.0.0.1.1742442376",
+          "cpu_family": "penryn",
+          "os": "Macintosh",
+          "os_version": "macOS 15.4",
+          "preferred_perl": "5.34",
+          "xcode": "16.3"
+        },
+        "changed_files": [
+          "lib/pkgconfig/libmpdec++.pc",
+          "lib/pkgconfig/libmpdec.pc"
+        ],
+        "compiler": "clang",
+        "homebrew_version": "4.5.0-101-g2af5eab",
+        "linkage_files": [
+          "lib/libmpdec++.4.0.1.dylib",
+          "lib/libmpdec.4.0.1.dylib"
+        ],
+        "runtime_dependencies": [],
+        "source_modified_time": 1746473798
+      },
+      "version": "4.0.1"
+    },
     "pkgconf": {
       "cellar": "/usr/local/Cellar",
       "image": "pkgconf",
@@ -39,7 +72,7 @@
       "version": "3.0.10"
     }
   },
-  "generated_at": "2026-11-14T10:21:16Z",
+  "generated_at": "2026-11-14T10:21:18Z",
   "root_url": "https://ghcr.io/v2/rdawebb/brewery-bottles",
   "schema": 1,
   "tag": "sequoia"
