@@ -1,5 +1,45 @@
 {
-  "generated_at": "2026-11-14T00:56:01Z",
+  "bottles": {
+    "pkgconf": {
+      "cellar": "/usr/local/Cellar",
+      "image": "pkgconf",
+      "rebuild": 0,
+      "revision": 0,
+      "sha256": "e8c198177970572271b3b192b9148acb1cc428c4b9afe300081105113e3d4612",
+      "source_url": "https://distfiles.ariadne.space/pkgconf/pkgconf-3.0.10.tar.xz",
+      "tab": {
+        "arch": "x86_64",
+        "binary_relocation_files": [
+          "lib/libpkgconf.8.dylib",
+          "lib/libpkgconf.a"
+        ],
+        "built_on": {
+          "clt": "16.4.0.0.1.1747106510",
+          "cpu_family": "ivybridge",
+          "os": "Macintosh",
+          "os_version": "macOS 15.7",
+          "preferred_perl": "5.34",
+          "xcode": "16.4"
+        },
+        "changed_files": [
+          "lib/pkgconfig/libpkgconf.pc"
+        ],
+        "compiler": "clang",
+        "homebrew_version": "7.0.13-136-g9230f0e",
+        "linkage_files": [
+          "bin/bomtool",
+          "bin/pccritic",
+          "bin/pkgconf",
+          "bin/spdxtool",
+          "lib/libpkgconf.8.dylib"
+        ],
+        "runtime_dependencies": [],
+        "source_modified_time": 1792380762
+      },
+      "version": "3.0.10"
+    }
+  },
+  "generated_at": "2026-11-14T10:21:16Z",
   "root_url": "https://ghcr.io/v2/rdawebb/brewery-bottles",
   "schema": 1,
   "tag": "sequoia"
