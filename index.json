@@ -1,5 +1,32 @@
 {
   "bottles": {
+    "fzf": {
+      "cellar": ":any_skip_relocation",
+      "image": "fzf",
+      "rebuild": 0,
+      "revision": 0,
+      "sha256": "37b317796fdb9c729f5424f0141513bdb714524ede149f6ae5e4c7fdea6d43c8",
+      "source_url": "https://github.com/junegunn/fzf/archive/refs/tags/v0.75.0.tar.gz",
+      "tab": {
+        "arch": "x86_64",
+        "binary_relocation_files": [],
+        "built_on": {
+          "clt": "16.4.0.0.1.1747106510",
+          "cpu_family": "ivybridge",
+          "os": "Macintosh",
+          "os_version": "macOS 15.7",
+          "preferred_perl": "5.34",
+          "xcode": "16.4"
+        },
+        "changed_files": [],
+        "compiler": "clang",
+        "homebrew_version": "7.0.13-136-g9230f0e",
+        "linkage_files": [],
+        "runtime_dependencies": [],
+        "source_modified_time": 1794052725
+      },
+      "version": "0.75.0"
+    },
     "go": {
       "cellar": ":any_skip_relocation",
       "image": "go",
@@ -235,7 +262,7 @@
       "version": "5.8.4"
     }
   },
-  "generated_at": "2026-11-14T10:33:17Z",
+  "generated_at": "2026-11-14T10:37:35Z",
   "root_url": "https://ghcr.io/v2/rdawebb/brewery-bottles",
   "schema": 1,
   "tag": "sequoia"
