@@ -130,6 +130,37 @@
       },
       "version": "1.11.1"
     },
+    "lz4": {
+      "cellar": ":any",
+      "image": "lz4",
+      "rebuild": 0,
+      "revision": 0,
+      "sha256": "56aa7b5921356a695b96e301236b17dae3911ee0b4572865999569ef5aa48d3a",
+      "source_url": "https://github.com/lz4/lz4/archive/refs/tags/v1.11.1.tar.gz",
+      "tab": {
+        "arch": "x86_64",
+        "binary_relocation_files": [],
+        "built_on": {
+          "clt": "16.4.0.0.1.1747106510",
+          "cpu_family": "ivybridge",
+          "os": "Macintosh",
+          "os_version": "macOS 15.7",
+          "preferred_perl": "5.34",
+          "xcode": "16.4"
+        },
+        "changed_files": [
+          "lib/pkgconfig/liblz4.pc"
+        ],
+        "compiler": "clang",
+        "homebrew_version": "7.0.13-138-g097e0b5",
+        "linkage_files": [
+          "lib/liblz4.1.11.1.dylib"
+        ],
+        "runtime_dependencies": [],
+        "source_modified_time": 1794288102
+      },
+      "version": "1.11.1"
+    },
     "mpdecimal": {
       "cellar": ":any",
       "image": "mpdecimal",
@@ -387,7 +418,7 @@
       "version": "5.8.4"
     }
   },
-  "generated_at": "2026-11-14T10:48:36Z",
+  "generated_at": "2026-11-14T10:54:08Z",
   "root_url": "https://ghcr.io/v2/rdawebb/brewery-bottles",
   "schema": 1,
   "tag": "sequoia"
