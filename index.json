@@ -131,6 +131,47 @@
       },
       "version": "8.3.6"
     },
+    "sqlite": {
+      "cellar": ":any",
+      "image": "sqlite",
+      "rebuild": 0,
+      "revision": 0,
+      "sha256": "e70f3413cd56f394659ae20b5c1dce4bf51e622c2220c2ebc8ccc5a17dd5ebf6",
+      "source_url": "https://www.sqlite.org/2026/sqlite-autoconf-3540100.tar.gz",
+      "tab": {
+        "arch": "x86_64",
+        "binary_relocation_files": [],
+        "built_on": {
+          "clt": "16.4.0.0.1.1747106510",
+          "cpu_family": "ivybridge",
+          "os": "Macintosh",
+          "os_version": "macOS 15.7",
+          "preferred_perl": "5.34",
+          "xcode": "16.4"
+        },
+        "changed_files": [
+          "lib/pkgconfig/sqlite3.pc"
+        ],
+        "compiler": "clang",
+        "homebrew_version": "7.0.13-136-g9230f0e",
+        "linkage_files": [
+          "bin/sqlite3",
+          "lib/libsqlite3.3.54.1.dylib"
+        ],
+        "runtime_dependencies": [
+          {
+            "compatibility_version": 1,
+            "declared_directly": true,
+            "full_name": "readline",
+            "pkg_version": "8.3.6",
+            "revision": 0,
+            "version": "8.3.6"
+          }
+        ],
+        "source_modified_time": 1792163983
+      },
+      "version": "3.54.1"
+    },
     "xz": {
       "cellar": ":any",
       "image": "xz",
@@ -167,7 +208,7 @@
       "version": "5.8.4"
     }
   },
-  "generated_at": "2026-11-14T10:25:05Z",
+  "generated_at": "2026-11-14T10:31:28Z",
   "root_url": "https://ghcr.io/v2/rdawebb/brewery-bottles",
   "schema": 1,
   "tag": "sequoia"
