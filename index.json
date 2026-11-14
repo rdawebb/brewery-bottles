@@ -70,9 +70,44 @@
         "source_modified_time": 1792380762
       },
       "version": "3.0.10"
+    },
+    "xz": {
+      "cellar": ":any",
+      "image": "xz",
+      "rebuild": 0,
+      "revision": 0,
+      "sha256": "ba1ab47e12c59ee1f3093928d4c9fcdd9327f497a7ba914480360f1933a63bfb",
+      "source_url": "https://github.com/tukaani-project/xz/releases/download/v5.8.4/xz-5.8.4.tar.gz",
+      "tab": {
+        "arch": "x86_64",
+        "binary_relocation_files": [],
+        "built_on": {
+          "clt": "16.4.0.0.1.1747106510",
+          "cpu_family": "ivybridge",
+          "os": "Macintosh",
+          "os_version": "macOS 15.7",
+          "preferred_perl": "5.34",
+          "xcode": "16.4"
+        },
+        "changed_files": [
+          "lib/pkgconfig/liblzma.pc"
+        ],
+        "compiler": "clang",
+        "homebrew_version": "7.0.13-136-g9230f0e",
+        "linkage_files": [
+          "bin/lzmadec",
+          "bin/lzmainfo",
+          "bin/xz",
+          "bin/xzdec",
+          "lib/liblzma.5.dylib"
+        ],
+        "runtime_dependencies": [],
+        "source_modified_time": 1788964466
+      },
+      "version": "5.8.4"
     }
   },
-  "generated_at": "2026-11-14T10:21:18Z",
+  "generated_at": "2026-11-14T10:22:30Z",
   "root_url": "https://ghcr.io/v2/rdawebb/brewery-bottles",
   "schema": 1,
   "tag": "sequoia"
