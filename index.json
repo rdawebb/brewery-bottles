@@ -130,6 +130,37 @@
       },
       "version": "1.11.1"
     },
+    "llhttp": {
+      "cellar": ":any",
+      "image": "llhttp",
+      "rebuild": 0,
+      "revision": 0,
+      "sha256": "4b245611d45756c42dda61f2fc3c51f98c9c0d0e8bd047898e9855051c456cbb",
+      "source_url": "https://github.com/nodejs/llhttp/archive/refs/tags/release/v9.4.4.tar.gz",
+      "tab": {
+        "arch": "x86_64",
+        "binary_relocation_files": [],
+        "built_on": {
+          "clt": "16.4.0.0.1.1747106510",
+          "cpu_family": "ivybridge",
+          "os": "Macintosh",
+          "os_version": "macOS 15.7",
+          "preferred_perl": "5.34",
+          "xcode": "16.4"
+        },
+        "changed_files": [
+          "lib/pkgconfig/libllhttp.pc"
+        ],
+        "compiler": "clang",
+        "homebrew_version": "7.0.13-138-g097e0b5",
+        "linkage_files": [
+          "lib/libllhttp.9.4.4.dylib"
+        ],
+        "runtime_dependencies": [],
+        "source_modified_time": 1794581943
+      },
+      "version": "9.4.4"
+    },
     "lz4": {
       "cellar": ":any",
       "image": "lz4",
@@ -418,7 +449,7 @@
       "version": "5.8.4"
     }
   },
-  "generated_at": "2026-11-14T10:54:08Z",
+  "generated_at": "2026-11-14T10:54:25Z",
   "root_url": "https://ghcr.io/v2/rdawebb/brewery-bottles",
   "schema": 1,
   "tag": "sequoia"
