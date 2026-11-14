@@ -7,7 +7,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from bottles.gap import pkg_version
+from bottles.gap import FORMULA_URL, fetch_json, load, pkg_version
 from bottles.ghcr import REGISTRY, SOURCE_URL, bottle_entry, image_name
 
 ROOT_URL = REGISTRY.replace("ghcr.io/", "https://ghcr.io/v2/", 1)
@@ -105,16 +105,36 @@ def write(path: Path, data: dict) -> None:
 
 
 def run(args: argparse.Namespace) -> None:
-    """Merge each bottle directory into `index.json` and `state.json` in `args.pages`.
+    """Merge each named build's result into `index.json` and `state.json` in `args.pages`.
+
+    Each formula's result is in `<results>/result-<name>`: the bottle JSON and image index on
+    success, or `failed.json` (`reason`, `seconds`) on failure; prints `<image> <sha256>` for
+    each added row.
 
     Args:
         args: the parsed command-line arguments.
     """
     index = read(args.pages / "index.json")
     state = read(args.pages / "state.json")
+    formulae = None
 
-    for d in args.bottles:
-        add(index, state, *row(bottle_entry(d), read(d / "image-index.json")))
+    for name in args.names:
+        d = args.results / f"result-{name}"
+        if any(d.glob("*.bottle.json")):
+            new_name, new = row(bottle_entry(d), read(d / "image-index.json"))
+            add(index, state, new_name, new)
+            print(new["image"], new["sha256"])
+            continue
+
+        # Timeouts recorded too, so no output means a lost runner: retry it
+        if not (failed := read(d / "failed.json")):
+            continue
+
+        # Keyed on the API's version, as `find_gap` looks it up
+        formulae = formulae or load(fetch_json(FORMULA_URL))
+        if f := formulae.get(name):
+            key = f"{name}@{pkg_version(f['versions']['stable'], f['revision'])}"
+            fail(state, key, failed["reason"], failed["seconds"])
 
     index |= {
         "schema": 1,
@@ -134,5 +154,6 @@ def add_parser(sub: Any) -> None:
     """
     p = sub.add_parser("merge", help="merge built bottles into index.json")
     p.add_argument("pages", type=Path, help="the checked-out Pages branch")
-    p.add_argument("bottles", type=Path, nargs="+", help="the build artifact dirs")
+    p.add_argument("results", type=Path, help="the downloaded build artifacts")
+    p.add_argument("names", nargs="*", help="the formulae this run built")
     p.set_defaults(run=run)

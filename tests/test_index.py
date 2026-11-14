@@ -1,5 +1,9 @@
 """Tests for merging bottles into `index.json` and counting failures."""
 
+import json
+from pathlib import Path
+
+from bottles.__main__ import main
 from bottles.gap import find_gap
 from bottles.index import add, fail, row
 from tests.test_gap import formula
@@ -70,3 +74,32 @@ def test_failures_count_up_to_the_skip_threshold() -> None:
     fail(state, "go@1.0", "timeout", 19800)
     assert state["go@1.0"] == {"failures": 2, "reason": "timeout", "seconds": 19800}
     assert find_gap(formulae, ["go"], {}, state) == []
+
+
+def test_merge_results(tmp_path: Path, monkeypatch, capsys) -> None:
+    """Test that a built leg is added, a failed one counted, and a missing one left to retry."""
+    results, pages = tmp_path / "results", tmp_path / "pages"
+    (results / "result-go").mkdir(parents=True)
+    (results / "result-bad").mkdir()
+    pages.mkdir()
+    entry = built("go", "1.0")
+    (results / "result-go" / "go--1.0.sequoia.bottle.json").write_text(
+        json.dumps({"go": entry})
+    )
+    (results / "result-go" / "image-index.json").write_text(json.dumps(IMAGE_INDEX))
+    (results / "result-bad" / "failed.json").write_text(
+        '{"reason": "test", "seconds": 5}'
+    )
+    api = [formula("go"), formula("bad", version="2.0", revision=1), formula("gone")]
+    monkeypatch.setattr("bottles.index.fetch_json", lambda url: api)
+
+    main(["merge", str(pages), str(results), "go", "bad", "gone"])
+
+    assert capsys.readouterr().out == "go sha-1.0\n"
+    assert (
+        json.loads((pages / "index.json").read_text())["bottles"]["go"]["version"]
+        == "1.0"
+    )
+    assert json.loads((pages / "state.json").read_text()) == {
+        "bad@2.0_1": {"failures": 1, "reason": "test", "seconds": 5},
+    }

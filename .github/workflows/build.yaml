@@ -61,13 +61,16 @@ jobs:
           done < deps.txt
 
       - name: Build
+        id: build
         run: |
           start=$(date +%s)
+          echo "$start" > "$RUNNER_TEMP/start"
           brew install --build-bottle --include-test "$FORMULA"
           mkdir -p bottle
           echo $(( $(date +%s) - start )) > bottle/seconds
 
       - name: Test
+        id: test
         run: |
           brew test "$FORMULA"
           brew linkage --test "$FORMULA"
@@ -87,9 +90,27 @@ jobs:
         with:
           subject-path: bottle/*.bottle*.tar.gz
 
-      # Last, so an artifact exists only for a bottle that was pushed
+      # Last, so a bottle JSON is uploaded only for a bottle that was pushed
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: bottle-${{ inputs.formula }}
-          path: bottle/
+          name: result-${{ inputs.formula }}
+          path: |
+            bottle/*.json
+            bottle/seconds
           if-no-files-found: error
+
+      - name: Record the failure
+        if: ${{ !success() }}
+        env:
+          REASON: ${{ job.status == 'cancelled' && 'timeout' || steps.test.outcome == 'failure' && 'test' || 'build' }}
+        run: |
+          start=$(cat "$RUNNER_TEMP/start" 2>/dev/null || date +%s)
+          jq -n --arg reason "$REASON" --argjson seconds $(( $(date +%s) - start )) \
+            '{$reason, $seconds}' > failed.json
+          cat failed.json
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: ${{ !success() }}
+        with:
+          name: result-${{ inputs.formula }}
+          path: failed.json

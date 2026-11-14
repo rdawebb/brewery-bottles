@@ -1,0 +1,89 @@
+name: Drain
+
+on:
+  workflow_dispatch:
+    inputs:
+      formula:
+        description: The homebrew/core formula to build and publish
+        type: string
+        required: true
+
+permissions: {}
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yaml
+    with:
+      formula: ${{ inputs.formula }}
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+
+  publish:
+    needs: build
+    if: ${{ !cancelled() }} # Failed legs are recorded too
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    permissions:
+      contents: write
+    env:
+      NAMES: ${{ inputs.formula }} # Via env, never interpolated into a script
+      ROOT_URL: https://ghcr.io/v2/rdawebb/brewery-bottles
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          enable-cache: true
+          python-version: "3.11"
+
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: result-*
+          path: results
+
+      - name: Check out gh-pages
+        run: |
+          if git fetch --depth=1 origin gh-pages; then
+            git worktree add -B gh-pages pages FETCH_HEAD
+          else
+            git worktree add --orphan -b gh-pages pages
+          fi
+
+      - name: Merge
+        run: |
+          read -ra names <<< "$NAMES"
+          uv run python -m bottles merge pages results "${names[@]}" > added.txt
+          cat added.txt
+
+      - name: Push
+        working-directory: pages
+        env:
+          TOKEN: ${{ github.token }}
+        run: |
+          touch .nojekyll
+          git add -A
+          git diff --cached --quiet && exit 0
+          git -c user.name="github-actions[bot]" \
+            -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -m "Publish run $GITHUB_RUN_ID"
+          git push "https://x-access-token:$TOKEN@github.com/$GITHUB_REPOSITORY.git" gh-pages
+
+      # Anonymously, as brewery fetches them, so a private package or broken push is caught
+      - name: Check the new blobs
+        run: |
+          while read -r image sha256; do
+            got=$(curl -sSfL -H 'Authorization: Bearer QQ==' \
+              "$ROOT_URL/$image/blobs/sha256:$sha256" | sha256sum | cut -d' ' -f1)
+            if [ "$got" != "$sha256" ]; then
+              echo "::error::$image: expected $sha256, got $got"
+              exit 1
+            fi
+          done < added.txt
