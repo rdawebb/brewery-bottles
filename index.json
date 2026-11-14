@@ -1,5 +1,32 @@
 {
   "bottles": {
+    "cmake": {
+      "cellar": ":any_skip_relocation",
+      "image": "cmake",
+      "rebuild": 0,
+      "revision": 0,
+      "sha256": "40d20ed15f29590aad7df2d08e491d0b2a373bd6758653ae3acb7ef496cc7bd8",
+      "source_url": "https://github.com/Kitware/CMake/releases/download/v4.5.0/cmake-4.5.0.tar.gz",
+      "tab": {
+        "arch": "x86_64",
+        "binary_relocation_files": [],
+        "built_on": {
+          "clt": "16.4.0.0.1.1747106510",
+          "cpu_family": "ivybridge",
+          "os": "Macintosh",
+          "os_version": "macOS 15.7",
+          "preferred_perl": "5.34",
+          "xcode": "16.4"
+        },
+        "changed_files": [],
+        "compiler": "clang",
+        "homebrew_version": "7.0.13-136-g9230f0e",
+        "linkage_files": [],
+        "runtime_dependencies": [],
+        "source_modified_time": 1794500578
+      },
+      "version": "4.5.0"
+    },
     "fzf": {
       "cellar": ":any_skip_relocation",
       "image": "fzf",
@@ -360,7 +387,7 @@
       "version": "5.8.4"
     }
   },
-  "generated_at": "2026-11-14T10:44:43Z",
+  "generated_at": "2026-11-14T10:48:36Z",
   "root_url": "https://ghcr.io/v2/rdawebb/brewery-bottles",
   "schema": 1,
   "tag": "sequoia"
