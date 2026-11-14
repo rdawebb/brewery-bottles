@@ -81,6 +81,72 @@
       },
       "version": "1.27.4"
     },
+    "libgit2": {
+      "cellar": ":any",
+      "image": "libgit2",
+      "rebuild": 0,
+      "revision": 2,
+      "sha256": "5d2ab761cc8379b4419bebf2c0e37afa270d4cb163c7e5fc8fad769e3b319af2",
+      "source_url": "https://github.com/libgit2/libgit2/archive/refs/tags/v1.9.7.tar.gz",
+      "tab": {
+        "arch": "x86_64",
+        "binary_relocation_files": [],
+        "built_on": {
+          "clt": "16.4.0.0.1.1747106510",
+          "cpu_family": "ivybridge",
+          "os": "Macintosh",
+          "os_version": "macOS 15.7",
+          "preferred_perl": "5.34",
+          "xcode": "16.4"
+        },
+        "changed_files": [
+          "lib/pkgconfig/libgit2.pc"
+        ],
+        "compiler": "clang",
+        "homebrew_version": "7.0.13-138-g097e0b5",
+        "linkage_files": [
+          "bin/git2",
+          "lib/libgit2.1.9.7.dylib"
+        ],
+        "runtime_dependencies": [
+          {
+            "bottle_rebuild": 0,
+            "compatibility_version": 1,
+            "declared_directly": false,
+            "full_name": "ca-certificates",
+            "pkg_version": "2026-11-05",
+            "revision": 0,
+            "version": "2026-11-05"
+          },
+          {
+            "compatibility_version": 1,
+            "declared_directly": true,
+            "full_name": "openssl@4",
+            "pkg_version": "4.1.0",
+            "revision": 0,
+            "version": "4.1.0"
+          },
+          {
+            "compatibility_version": 1,
+            "declared_directly": true,
+            "full_name": "libssh2",
+            "pkg_version": "1.11.1_7",
+            "revision": 7,
+            "version": "1.11.1"
+          },
+          {
+            "compatibility_version": 2,
+            "declared_directly": true,
+            "full_name": "llhttp",
+            "pkg_version": "9.4.4",
+            "revision": 0,
+            "version": "9.4.4"
+          }
+        ],
+        "source_modified_time": 1786651721
+      },
+      "version": "1.9.7"
+    },
     "libssh2": {
       "cellar": ":any",
       "image": "libssh2",
@@ -580,7 +646,7 @@
       "version": "5.8.4"
     }
   },
-  "generated_at": "2026-11-14T11:11:42Z",
+  "generated_at": "2026-11-14T11:19:14Z",
   "root_url": "https://ghcr.io/v2/rdawebb/brewery-bottles",
   "schema": 1,
   "tag": "sequoia"
