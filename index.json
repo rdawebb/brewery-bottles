@@ -339,6 +339,137 @@
       },
       "version": "3.0.10"
     },
+    "python@3.15": {
+      "cellar": "/usr/local/Cellar",
+      "image": "python/3.15",
+      "rebuild": 0,
+      "revision": 0,
+      "sha256": "00234be64f80a0ce6fcf8d526fae02bc85d33936c35cbf66570e1de6dbbea7cd",
+      "source_url": "https://www.python.org/ftp/python/3.15.2/Python-3.15.2.tgz",
+      "tab": {
+        "arch": "x86_64",
+        "binary_relocation_files": [
+          "Frameworks/Python.framework/Versions/3.15/Python"
+        ],
+        "built_on": {
+          "clt": "16.4.0.0.1.1747106510",
+          "cpu_family": "ivybridge",
+          "os": "Macintosh",
+          "os_version": "macOS 15.7",
+          "preferred_perl": "5.34",
+          "xcode": "16.4"
+        },
+        "changed_files": [
+          "Frameworks/Python.framework/Versions/3.15/bin/idle3.15",
+          "Frameworks/Python.framework/Versions/3.15/bin/pip3",
+          "Frameworks/Python.framework/Versions/3.15/bin/pip3.15",
+          "Frameworks/Python.framework/Versions/3.15/bin/pydoc3.15",
+          "Frameworks/Python.framework/Versions/3.15/bin/python3.15-config",
+          "Frameworks/Python.framework/Versions/3.15/lib/python3.15/config-3.15-darwin/python-config.py",
+          "IDLE 3.app/Contents/MacOS/IDLE",
+          "bin/pip3",
+          "bin/pip3.15",
+          "Frameworks/Python.framework/Versions/3.15/lib/pkgconfig/python-3.15-embed.pc",
+          "Frameworks/Python.framework/Versions/3.15/lib/pkgconfig/python-3.15.pc",
+          "Frameworks/Python.framework/Versions/3.15/lib/python3.15/_sysconfigdata__darwin_darwin.py",
+          "Frameworks/Python.framework/Versions/3.15/lib/python3.15/config-3.15-darwin/Makefile",
+          "Frameworks/Python.framework/Versions/3.15/lib/python3.15/ctypes/macholib/dyld.py",
+          "Frameworks/Python.framework/Versions/3.15/lib/python3.15/sitecustomize.py"
+        ],
+        "compiler": "clang",
+        "homebrew_version": "7.0.13-138-g097e0b5",
+        "linkage_files": [
+          "Frameworks/Python.framework/Versions/3.15/Python",
+          "Frameworks/Python.framework/Versions/3.15/Resources/Python.app/Contents/MacOS/Python",
+          "Frameworks/Python.framework/Versions/3.15/bin/python3.15",
+          "Frameworks/Python.framework/Versions/3.15/lib/python3.15/lib-dynload/_decimal.cpython-315-darwin.so",
+          "Frameworks/Python.framework/Versions/3.15/lib/python3.15/lib-dynload/_hashlib.cpython-315-darwin.so",
+          "Frameworks/Python.framework/Versions/3.15/lib/python3.15/lib-dynload/_lzma.cpython-315-darwin.so",
+          "Frameworks/Python.framework/Versions/3.15/lib/python3.15/lib-dynload/_remote_debugging.cpython-315-darwin.so",
+          "Frameworks/Python.framework/Versions/3.15/lib/python3.15/lib-dynload/_sqlite3.cpython-315-darwin.so",
+          "Frameworks/Python.framework/Versions/3.15/lib/python3.15/lib-dynload/_ssl.cpython-315-darwin.so",
+          "Frameworks/Python.framework/Versions/3.15/lib/python3.15/lib-dynload/_zstd.cpython-315-darwin.so"
+        ],
+        "runtime_dependencies": [
+          {
+            "bottle_rebuild": 0,
+            "compatibility_version": 1,
+            "declared_directly": true,
+            "full_name": "ca-certificates",
+            "pkg_version": "2026-11-05",
+            "revision": 0,
+            "version": "2026-11-05"
+          },
+          {
+            "compatibility_version": 1,
+            "declared_directly": true,
+            "full_name": "mpdecimal",
+            "pkg_version": "4.0.1",
+            "revision": 0,
+            "version": "4.0.1"
+          },
+          {
+            "compatibility_version": 1,
+            "declared_directly": true,
+            "full_name": "openssl@4",
+            "pkg_version": "4.1.0",
+            "revision": 0,
+            "version": "4.1.0"
+          },
+          {
+            "compatibility_version": 1,
+            "declared_directly": false,
+            "full_name": "readline",
+            "pkg_version": "8.3.6",
+            "revision": 0,
+            "version": "8.3.6"
+          },
+          {
+            "compatibility_version": 1,
+            "declared_directly": true,
+            "full_name": "sqlite",
+            "pkg_version": "3.54.1",
+            "revision": 0,
+            "version": "3.54.1"
+          },
+          {
+            "compatibility_version": 1,
+            "declared_directly": true,
+            "full_name": "xz",
+            "pkg_version": "5.8.4",
+            "revision": 0,
+            "version": "5.8.4"
+          },
+          {
+            "compatibility_version": 1,
+            "declared_directly": false,
+            "full_name": "lz4",
+            "pkg_version": "1.11.1",
+            "revision": 0,
+            "version": "1.11.1"
+          },
+          {
+            "bottle_rebuild": 0,
+            "compatibility_version": 1,
+            "declared_directly": true,
+            "full_name": "zstd",
+            "pkg_version": "1.5.7_1",
+            "revision": 1,
+            "version": "1.5.7"
+          },
+          {
+            "compatibility_version": 1,
+            "declared_directly": false,
+            "full_name": "gettext",
+            "pkg_version": "1.0",
+            "revision": 0,
+            "version": "1.0"
+          }
+        ],
+        "source_modified_time": 1792947471
+      },
+      "version": "3.15.2"
+    },
     "readline": {
       "cellar": ":any",
       "image": "readline",
@@ -449,7 +580,7 @@
       "version": "5.8.4"
     }
   },
-  "generated_at": "2026-11-14T10:59:09Z",
+  "generated_at": "2026-11-14T11:11:42Z",
   "root_url": "https://ghcr.io/v2/rdawebb/brewery-bottles",
   "schema": 1,
   "tag": "sequoia"
