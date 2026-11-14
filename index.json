@@ -33,6 +33,33 @@
       },
       "version": "4.0.1"
     },
+    "ninja": {
+      "cellar": ":any_skip_relocation",
+      "image": "ninja",
+      "rebuild": 0,
+      "revision": 0,
+      "sha256": "4bfb7aefe44aafe9ddd388ae7c7201469e7e7fe2f18ee0a5c1d70b092d08b86b",
+      "source_url": "https://github.com/ninja-build/ninja/archive/refs/tags/v1.13.2.tar.gz",
+      "tab": {
+        "arch": "x86_64",
+        "binary_relocation_files": [],
+        "built_on": {
+          "clt": "26.2.0.0.1.1764812424",
+          "cpu_family": "penryn",
+          "os": "Macintosh",
+          "os_version": "macOS 15.7",
+          "preferred_perl": "5.34",
+          "xcode": "26.2"
+        },
+        "changed_files": [],
+        "compiler": "clang",
+        "homebrew_version": "5.0.15-17-ge8ecbc4",
+        "linkage_files": [],
+        "runtime_dependencies": [],
+        "source_modified_time": 1763655980
+      },
+      "version": "1.13.2"
+    },
     "pkgconf": {
       "cellar": "/usr/local/Cellar",
       "image": "pkgconf",
@@ -107,7 +134,7 @@
       "version": "5.8.4"
     }
   },
-  "generated_at": "2026-11-14T10:22:30Z",
+  "generated_at": "2026-11-14T10:23:20Z",
   "root_url": "https://ghcr.io/v2/rdawebb/brewery-bottles",
   "schema": 1,
   "tag": "sequoia"
