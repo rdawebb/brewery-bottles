@@ -59,10 +59,11 @@ jobs:
           uv run python -m bottles deps --pages pages "$FORMULA" > deps.txt
           cat deps.txt
           mkdir -p deps
-          while read -r image sha256 file; do
+          # Read on fd 3, as brew reads stdin and would swallow the next lines
+          while read -r image sha256 file <&3; do
             oras blob fetch --output "deps/$file" "ghcr.io/rdawebb/brewery-bottles/$image@sha256:$sha256"
             brew install "./deps/$file"
-          done < deps.txt
+          done 3< deps.txt
 
       - name: Build
         id: build
