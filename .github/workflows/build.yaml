@@ -50,6 +50,10 @@ jobs:
           core="$(brew --repository)/Library/Taps/homebrew/homebrew-core"
           rm -rf "$core"
           git clone --depth=1 https://github.com/Homebrew/homebrew-core "$core"
+          # No PGO for faster build at the cost of a slightly slower clang; fail loudly if
+          # the formula's line changes
+          sed -i '' 's/^    pgo_build = .*/    pgo_build = false/' "$core/Formula/l/llvm.rb"
+          grep -q '^    pgo_build = false$' "$core/Formula/l/llvm.rb"
 
       - name: Install dependencies
         run: |
