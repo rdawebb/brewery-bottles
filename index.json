@@ -1,5 +1,32 @@
 {
   "bottles": {
+    "go": {
+      "cellar": ":any_skip_relocation",
+      "image": "go",
+      "rebuild": 0,
+      "revision": 0,
+      "sha256": "c70994927b656490f7c219f353c8219902491a0b1944f69c92b24ea95bb2e8d9",
+      "source_url": "https://go.dev/dl/go1.27.4.src.tar.gz",
+      "tab": {
+        "arch": "x86_64",
+        "binary_relocation_files": [],
+        "built_on": {
+          "clt": "16.4.0.0.1.1747106510",
+          "cpu_family": "ivybridge",
+          "os": "Macintosh",
+          "os_version": "macOS 15.7",
+          "preferred_perl": "5.34",
+          "xcode": "16.4"
+        },
+        "changed_files": [],
+        "compiler": "clang",
+        "homebrew_version": "7.0.13-136-g9230f0e",
+        "linkage_files": [],
+        "runtime_dependencies": [],
+        "source_modified_time": 1793651780
+      },
+      "version": "1.27.4"
+    },
     "mpdecimal": {
       "cellar": ":any",
       "image": "mpdecimal",
@@ -208,7 +235,7 @@
       "version": "5.8.4"
     }
   },
-  "generated_at": "2026-11-14T10:31:28Z",
+  "generated_at": "2026-11-14T10:33:17Z",
   "root_url": "https://ghcr.io/v2/rdawebb/brewery-bottles",
   "schema": 1,
   "tag": "sequoia"
