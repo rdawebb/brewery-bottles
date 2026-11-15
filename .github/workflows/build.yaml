@@ -47,7 +47,8 @@ jobs:
           # Drops azure-cli to prevent 'brew update' migrating it to cask version
           brew uninstall --formula --force azure-cli || true
           # Drops rustup to prevent the runner's rustc shadowing the built rust
-          rustup self uninstall -y || true
+          brew uninstall --formula --force rustup || true
+          rm -rf ~/.cargo/bin ~/.rustup
           brew update
           core="$(brew --repository)/Library/Taps/homebrew/homebrew-core"
           rm -rf "$core"
