@@ -688,6 +688,149 @@
       },
       "version": "8.3.6"
     },
+    "rust": {
+      "cellar": ":any",
+      "image": "rust",
+      "rebuild": 0,
+      "revision": 0,
+      "sha256": "e73f94f7bef9f34e4963e68f9cc04b8685888c4ea655ae28499fe81680c57d36",
+      "source_url": "https://static.rust-lang.org/dist/rustc-1.100.0-src.tar.gz",
+      "tab": {
+        "arch": "x86_64",
+        "binary_relocation_files": [],
+        "built_on": {
+          "clt": "16.4.0.0.1.1747106510",
+          "cpu_family": "ivybridge",
+          "os": "Macintosh",
+          "os_version": "macOS 15.7",
+          "preferred_perl": "5.34",
+          "xcode": "16.4"
+        },
+        "changed_files": [],
+        "compiler": "clang",
+        "homebrew_version": "7.0.13-140-g1cd7b3e",
+        "linkage_files": [
+          "bin/cargo",
+          "bin/cargo-clippy",
+          "bin/clippy-driver",
+          "bin/rustc",
+          "bin/rustdoc",
+          "bin/rustfmt",
+          "lib/librustc_driver-7da1c84cd63b01b9.dylib",
+          "libexec/rust-analyzer-proc-macro-srv"
+        ],
+        "runtime_dependencies": [
+          {
+            "bottle_rebuild": 0,
+            "compatibility_version": 1,
+            "declared_directly": false,
+            "full_name": "ca-certificates",
+            "pkg_version": "2026-11-05",
+            "revision": 0,
+            "version": "2026-11-05"
+          },
+          {
+            "compatibility_version": 1,
+            "declared_directly": true,
+            "full_name": "openssl@4",
+            "pkg_version": "4.1.0",
+            "revision": 0,
+            "version": "4.1.0"
+          },
+          {
+            "compatibility_version": 1,
+            "declared_directly": true,
+            "full_name": "libssh2",
+            "pkg_version": "1.11.1_7",
+            "revision": 7,
+            "version": "1.11.1"
+          },
+          {
+            "compatibility_version": 2,
+            "declared_directly": false,
+            "full_name": "llhttp",
+            "pkg_version": "9.4.4",
+            "revision": 0,
+            "version": "9.4.4"
+          },
+          {
+            "compatibility_version": 1,
+            "declared_directly": true,
+            "full_name": "libgit2",
+            "pkg_version": "1.9.7_2",
+            "revision": 2,
+            "version": "1.9.7"
+          },
+          {
+            "compatibility_version": 1,
+            "declared_directly": false,
+            "full_name": "lz4",
+            "pkg_version": "1.11.1",
+            "revision": 0,
+            "version": "1.11.1"
+          },
+          {
+            "compatibility_version": 1,
+            "declared_directly": false,
+            "full_name": "xz",
+            "pkg_version": "5.8.4",
+            "revision": 0,
+            "version": "5.8.4"
+          },
+          {
+            "bottle_rebuild": 0,
+            "compatibility_version": 1,
+            "declared_directly": false,
+            "full_name": "zstd",
+            "pkg_version": "1.5.7_1",
+            "revision": 1,
+            "version": "1.5.7"
+          },
+          {
+            "compatibility_version": 6,
+            "declared_directly": false,
+            "full_name": "z3",
+            "pkg_version": "5.4.1",
+            "revision": 0,
+            "version": "5.4.1"
+          },
+          {
+            "compatibility_version": 2,
+            "declared_directly": true,
+            "full_name": "llvm",
+            "pkg_version": "23.1.5_1",
+            "revision": 1,
+            "version": "23.1.5"
+          },
+          {
+            "compatibility_version": 2,
+            "declared_directly": true,
+            "full_name": "pkgconf",
+            "pkg_version": "3.0.10",
+            "revision": 0,
+            "version": "3.0.10"
+          },
+          {
+            "compatibility_version": 1,
+            "declared_directly": false,
+            "full_name": "readline",
+            "pkg_version": "8.3.6",
+            "revision": 0,
+            "version": "8.3.6"
+          },
+          {
+            "compatibility_version": 1,
+            "declared_directly": true,
+            "full_name": "sqlite",
+            "pkg_version": "3.54.1",
+            "revision": 0,
+            "version": "3.54.1"
+          }
+        ],
+        "source_modified_time": 1794262315
+      },
+      "version": "1.100.0"
+    },
     "sqlite": {
       "cellar": ":any",
       "image": "sqlite",
@@ -794,7 +937,7 @@
       "version": "5.4.1"
     }
   },
-  "generated_at": "2026-11-15T01:56:01Z",
+  "generated_at": "2026-11-15T13:01:54Z",
   "root_url": "https://ghcr.io/v2/rdawebb/brewery-bottles",
   "schema": 1,
   "tag": "sequoia"
