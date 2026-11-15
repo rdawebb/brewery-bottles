@@ -1,7 +1,1 @@
-{
-  "rust@1.100.0": {
-    "failures": 2,
-    "reason": "test",
-    "seconds": 5897
-  }
-}
+{}
