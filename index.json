@@ -81,6 +81,33 @@
       },
       "version": "1.27.4"
     },
+    "just": {
+      "cellar": ":any_skip_relocation",
+      "image": "just",
+      "rebuild": 0,
+      "revision": 0,
+      "sha256": "5954f209d24ef22705b08a8cbbfbd4081fd7df82bf3aef76fb2f725c821c2a0c",
+      "source_url": "https://github.com/casey/just/archive/refs/tags/1.59.0.tar.gz",
+      "tab": {
+        "arch": "x86_64",
+        "binary_relocation_files": [],
+        "built_on": {
+          "clt": "16.4.0.0.1.1747106510",
+          "cpu_family": "ivybridge",
+          "os": "Macintosh",
+          "os_version": "macOS 15.7",
+          "preferred_perl": "5.34",
+          "xcode": "16.4"
+        },
+        "changed_files": [],
+        "compiler": "clang",
+        "homebrew_version": "7.0.13-140-g1cd7b3e",
+        "linkage_files": [],
+        "runtime_dependencies": [],
+        "source_modified_time": 1792046269
+      },
+      "version": "1.59.0"
+    },
     "libgit2": {
       "cellar": ":any",
       "image": "libgit2",
@@ -937,7 +964,7 @@
       "version": "5.4.1"
     }
   },
-  "generated_at": "2026-11-15T13:01:54Z",
+  "generated_at": "2026-11-15T13:12:45Z",
   "root_url": "https://ghcr.io/v2/rdawebb/brewery-bottles",
   "schema": 1,
   "tag": "sequoia"
