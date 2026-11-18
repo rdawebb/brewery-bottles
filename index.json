@@ -258,9 +258,9 @@
       "cellar": ":any",
       "image": "llvm",
       "rebuild": 0,
-      "revision": 1,
-      "sha256": "359a92cc11e311109e608979a055a88992095850c150cd004c63141dbf57c378",
-      "source_url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.5/llvm-project-23.1.5.src.tar.xz",
+      "revision": 0,
+      "sha256": "0b6f519fe9c67954915e89ddead799e067ff6a8a406781238fc252257f4ef804",
+      "source_url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.6/llvm-project-23.1.6.src.tar.xz",
       "tab": {
         "arch": "x86_64",
         "binary_relocation_files": [],
@@ -282,7 +282,7 @@
           "lib/python3.9/site-packages/clang/cindex.py"
         ],
         "compiler": "clang",
-        "homebrew_version": "7.0.13-140-g1cd7b3e",
+        "homebrew_version": "7.0.14-86-g996df68",
         "linkage_files": [
           "bin/FileCheck",
           "bin/UnicodeNameMappingGenerator",
@@ -369,9 +369,9 @@
             "version": "5.4.1"
           }
         ],
-        "source_modified_time": 1793616315
+        "source_modified_time": 1794833175
       },
-      "version": "23.1.5"
+      "version": "23.1.6"
     },
     "lz4": {
       "cellar": ":any",
@@ -964,7 +964,7 @@
       "version": "5.4.1"
     }
   },
-  "generated_at": "2026-11-18T13:05:35Z",
+  "generated_at": "2026-11-18T21:07:21Z",
   "root_url": "https://ghcr.io/v2/rdawebb/brewery-bottles",
   "schema": 1,
   "tag": "sequoia"
