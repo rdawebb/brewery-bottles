@@ -49,6 +49,9 @@ jobs:
           # Drops rustup to prevent the runner's rustc shadowing the built rust
           brew uninstall --formula --force rustup || true
           rm -rf ~/.cargo/bin ~/.rustup
+          # brew's post-install mkpaths $HOMEBREW_PREFIX/libexec, which fails in a
+          # root-owned /usr/local (Homebrew/brew#24622); drop once brew stops needing it
+          sudo install -d -o "$USER" -g admin /usr/local/libexec
           brew update
           core="$(brew --repository)/Library/Taps/homebrew/homebrew-core"
           rm -rf "$core"
@@ -114,8 +117,10 @@ jobs:
           path: result/
           if-no-files-found: error
 
+      # Only once the build has started: a setup or dependency failure is left without
+      # a result and retried, so not counted towards its skip
       - name: Record the failure
-        if: ${{ !success() }}
+        if: ${{ !success() && steps.build.outcome != 'skipped' }}
         env:
           REASON: ${{ job.status == 'cancelled' && 'timeout' || steps.test.outcome == 'failure' && 'test' || 'build' }}
         run: |

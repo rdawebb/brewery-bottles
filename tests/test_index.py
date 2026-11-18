@@ -129,7 +129,7 @@ def test_summary(tmp_path: Path) -> None:
         "| --- | --- | --- | --- |",
         "| go | built | 23 | 1.0 → 1.1 |",
         "| rust | failed (timeout) | 330 | 1.0 |",
-        "| gone | lost, retried next run |  | 1.0 |",
+        "| gone | no result, retried next run |  | 1.0 |",
         "",
         "**Building elsewhere:** c",
         "",

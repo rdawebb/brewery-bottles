@@ -126,7 +126,7 @@ def run(args: argparse.Namespace) -> None:
             print(new["image"], new["sha256"])
             continue
 
-        # Timeouts recorded too, so no output means a lost runner: retry it
+        # Timeouts recorded too, so no output means a lost runner or a failure before the build: retry it
         if not (failed := read(d / "failed.json")):
             continue
 
@@ -175,7 +175,7 @@ def summary(plan: dict, results: Path) -> str:
             result, seconds = f"failed ({failed['reason']})", failed["seconds"]
 
         else:
-            result, seconds = "lost, retried next run", None
+            result, seconds = "no result, retried next run", None
 
         minutes = "" if seconds is None else round(seconds / 60)
         lines.append(f"| {name} | {result} | {minutes} | {version} |")

@@ -1,3 +1,5 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 # brewery-bottles
 
 Homebrew bottles for Intel Macs, built for
@@ -72,4 +74,4 @@ GitHub Pages.
 uv run just verify   # lint, format, type check, tests
 ```
 
-MIT licensed
+MIT License
