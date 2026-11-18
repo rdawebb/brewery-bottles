@@ -964,7 +964,7 @@
       "version": "5.4.1"
     }
   },
-  "generated_at": "2026-11-17T13:26:31Z",
+  "generated_at": "2026-11-18T13:05:35Z",
   "root_url": "https://ghcr.io/v2/rdawebb/brewery-bottles",
   "schema": 1,
   "tag": "sequoia"
