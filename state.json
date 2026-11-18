@@ -1,7 +1,1 @@
-{
-  "llvm@23.1.6": {
-    "failures": 1,
-    "reason": "build",
-    "seconds": 0
-  }
-}
+{}
