@@ -962,9 +962,58 @@
         "source_modified_time": 1794354107
       },
       "version": "5.4.1"
+    },
+    "zstd": {
+      "cellar": ":any",
+      "image": "zstd",
+      "rebuild": 0,
+      "revision": 0,
+      "sha256": "0c68fdcf89c1b9bcad42f3120cff0dce712df9363ce5595ef00c6237d3a56a42",
+      "source_url": "https://github.com/meta/zstd/archive/refs/tags/v1.6.0.tar.gz",
+      "tab": {
+        "arch": "x86_64",
+        "binary_relocation_files": [],
+        "built_on": {
+          "clt": "16.4.0.0.1.1747106510",
+          "cpu_family": "ivybridge",
+          "os": "Macintosh",
+          "os_version": "macOS 15.7",
+          "preferred_perl": "5.34",
+          "xcode": "16.4"
+        },
+        "changed_files": [
+          "lib/pkgconfig/libzstd.pc"
+        ],
+        "compiler": "clang",
+        "homebrew_version": "7.0.16-40-g92a04e2",
+        "linkage_files": [
+          "bin/zstd",
+          "lib/libzstd.1.6.0.dylib"
+        ],
+        "runtime_dependencies": [
+          {
+            "compatibility_version": 1,
+            "declared_directly": true,
+            "full_name": "lz4",
+            "pkg_version": "1.11.1",
+            "revision": 0,
+            "version": "1.11.1"
+          },
+          {
+            "compatibility_version": 1,
+            "declared_directly": true,
+            "full_name": "xz",
+            "pkg_version": "5.8.4",
+            "revision": 0,
+            "version": "5.8.4"
+          }
+        ],
+        "source_modified_time": 1795473652
+      },
+      "version": "1.6.0"
     }
   },
-  "generated_at": "2026-11-25T14:51:56Z",
+  "generated_at": "2026-11-25T14:59:20Z",
   "root_url": "https://ghcr.io/v2/rdawebb/brewery-bottles",
   "schema": 1,
   "tag": "sequoia"
